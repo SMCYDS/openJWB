@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 - openJWB 数据看板</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="login-page">
+    <form id="login-form" class="login-card">
+      <h1>openJWB 数据看板</h1>
+      <p class="hint">登录功能开发中，当前任意账号密码均可登录</p>
+
+      <label for="username">用户名</label>
+      <input type="text" id="username" name="username" autocomplete="username" required />
+
+      <label for="password">密码</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required />
+
+      <button type="submit">登录</button>
+
+      <p id="error-msg" class="error"></p>
+    </form>
+
+    <div class="login-card qr-card">
+      <h1>Jaccount 扫码登录</h1>
+      <div class="qr-code-wrap">
+        <img id="qrcode-img" alt="二维码" />
+      </div>
+      <p id="qrcode-status" class="hint">正在获取二维码...</p>
+    </div>
+  </div>
+
+  <script src="js/heartbeat.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/sjtuQrLogin.js"></script>
+</body>
+</html>

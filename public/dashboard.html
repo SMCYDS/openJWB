@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>openJWB 数据看板</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="dashboard-page">
+    <header class="topbar">
+      <h1>openJWB 数据看板</h1>
+      <div class="user-info">
+        <span id="username-display"></span>
+        <button id="logout-btn">退出登录</button>
+      </div>
+    </header>
+
+    <div class="dashboard-body">
+      <nav class="mode-nav" id="mode-nav">
+        <button class="mode-btn active" data-mode="request-send">请求发送</button>
+        <button class="mode-btn" data-mode="overview">概览</button>
+      </nav>
+
+      <main class="mode-content">
+        <!-- 请求发送模式 -->
+        <section id="mode-request-send" class="mode-panel active">
+          <div class="req-form">
+            <div class="form-row">
+              <label for="preset-select">预设请求</label>
+              <select id="preset-select">
+                <option value="">-- 请选择预设 --</option>
+                <option value="https://my.sjtu.edu.cn/api/account">账户信息</option>
+                <option value="https://my.sjtu.edu.cn/api/task/me/category">服务类别</option>
+                <option value="https://my.sjtu.edu.cn/api/task/me/apps">服务列表</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="req-method">方法</label>
+              <select id="req-method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+                <option>HEAD</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <label for="req-url">请求链接</label>
+              <input type="text" id="req-url" value="https://my.sjtu.edu.cn/api/account" />
+            </div>
+
+            <div class="form-row form-actions">
+              <button id="send-btn">发送请求</button>
+              <span id="req-status" class="hint"></span>
+            </div>
+          </div>
+
+          <div class="resp-area">
+            <div class="resp-tabs" id="resp-tabs">
+              <button class="resp-tab active" data-tab="body">Body</button>
+              <button class="resp-tab" data-tab="header">Header</button>
+            </div>
+            <div id="resp-body" class="resp-panel active"><pre></pre></div>
+            <div id="resp-header" class="resp-panel"><pre></pre></div>
+          </div>
+        </section>
+
+        <!-- 概览模式 -->
+        <section id="mode-overview" class="mode-panel">
+          <p class="updated-at">更新时间：<span id="updated-at">--</span></p>
+          <div id="metrics" class="metrics-grid"></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="js/heartbeat.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/requestSend.js"></script>
+</body>
+</html>

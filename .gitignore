@@ -1,0 +1,12 @@
+# 依赖
+server/node_modules/
+
+# 本地环境变量与敏感信息
+server/.env
+sensitiveKeyStorage.txt
+
+# 系统/编辑器
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
