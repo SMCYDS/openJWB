@@ -1,12 +1,27 @@
-# 依赖
-server/node_modules/
+# Local archives, private captures, and optional installed plugins
+legacy/
+bjar.txt
+hotresp.txt
+public/misc/running.json
+public/plugins/*/
 
-# 本地环境变量与敏感信息
-server/.env
-sensitiveKeyStorage.txt
-
-# 系统/编辑器
-Thumbs.db
-.DS_Store
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
 .vscode/
 .idea/
+
+# Generated files
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+.pytest_cache/
+*.log
+.DS_Store
+Thumbs.db
+sensitiveKeyStorage.txt

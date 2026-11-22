@@ -1,62 +1,34 @@
 @echo off
-setlocal enabledelayedexpansion
-title openJWB Dashboard
+setlocal
+cd /d "%~dp0"
+set "OPENJWB_SCRIPT=%~dp0server\requestHandler.py"
 
-set "ROOT_DIR=%~dp0"
-set "SERVER_DIR=%ROOT_DIR%server"
-
-echo [openJWB] Checking Node.js...
-where node >nul 2>&1
+where python >nul 2>&1
 if errorlevel 1 (
-    echo [openJWB] Node.js not found.
-    where winget >nul 2>&1
-    if errorlevel 1 (
-        echo [openJWB] winget is not available, cannot auto-install.
-        echo [openJWB] Please install Node.js LTS from https://nodejs.org then run this script again.
-        pause
-        exit /b 1
-    )
-    echo [openJWB] Installing Node.js LTS via winget, please wait...
-    winget install -e --id OpenJS.NodeJS.LTS --accept-source-agreements --accept-package-agreements
-    if errorlevel 1 (
-        echo [openJWB] Auto-install failed. Please install Node.js manually from https://nodejs.org
-        pause
-        exit /b 1
-    )
-    echo [openJWB] Node.js installed. Please close this window and double-click start.bat again.
+    echo Python was not found. Install Python and add it to PATH.
     pause
-    exit /b 0
+    exit /b 1
 )
 
-for /f "tokens=*" %%v in ('node -v') do echo [openJWB] Found Node.js %%v
-
-cd /d "%SERVER_DIR%"
-
-if not exist "node_modules" (
-    echo [openJWB] First run, installing dependencies ^(needs internet^)...
-    call npm install
-    if errorlevel 1 (
-        echo [openJWB] npm install failed. Check your network connection and try again.
-        pause
-        exit /b 1
-    )
-)
-
-if not exist ".env" (
-    echo [openJWB] Creating default .env from .env.example...
-    copy /y ".env.example" ".env" >nul
-)
-
-set "PORT=18960"
-for /f "usebackq tokens=1,* delims==" %%a in (".env") do (
-    if /i "%%a"=="PORT" set "PORT=%%b"
-)
-
-echo [openJWB] Starting server on port %PORT%...
-start "" http://localhost:%PORT%
-node server.js
-
+powershell.exe -NoProfile -Command "& { $ErrorActionPreference = 'Stop'; $scriptPath = $env:OPENJWB_SCRIPT; $pattern = [regex]::Escape($scriptPath) + '(?=\s|\x22|$)'; $relative = '(?:^|[\s\x22])(?:server[/\\])?requestHandler\.py(?=\s|\x22|$)'; $owners = @(Get-NetTCPConnection -LocalPort 51896 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess); Get-CimInstance Win32_Process | Where-Object { $_.Name -in 'python.exe', 'pythonw.exe' } | ForEach-Object { if ($_.CommandLine -match $pattern -or ($owners -contains $_.ProcessId -and $_.CommandLine -match $relative)) { Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop } }; for ($i = 0; $i -lt 20; $i++) { if (-not (Get-NetTCPConnection -LocalPort 51896 -State Listen -ErrorAction SilentlyContinue)) { exit 0 }; Start-Sleep -Milliseconds 250 }; throw 'Port 51896 is still occupied by another process.' }"
 if errorlevel 1 (
-    echo [openJWB] Server exited with an error.
+    echo Unable to stop the previous server or port 51896 is in use.
+    pause
+    exit /b 1
+)
+
+python -m pip install -r "%~dp0server\requirements.txt"
+if errorlevel 1 (
+    echo Could not install Python dependencies.
+    pause
+    exit /b 1
+)
+
+if not defined OPENJWB_NO_BROWSER (
+    start "" /min powershell.exe -NoProfile -WindowStyle Hidden -Command "for ($i = 0; $i -lt 40; $i++) { try { $response = Invoke-WebRequest 'http://127.0.0.1:51896/' -UseBasicParsing -TimeoutSec 1; if ($response.StatusCode -eq 200) { Start-Process 'http://127.0.0.1:51896/'; break } } catch {} ; Start-Sleep -Milliseconds 250 }"
+)
+python -B "%OPENJWB_SCRIPT%"
+if errorlevel 1 (
+    echo Server exited with an error.
     pause
 )
